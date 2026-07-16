@@ -5,7 +5,7 @@ require_once '../../config/db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1. Validasi CSRF Token
-    $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+    $csrf_token = $_POST['csrf_token'] ?? '';
     if (!verify_csrf_token($csrf_token)) {
         set_flash_message('danger', 'Token keamanan tidak valid. Silakan coba lagi.');
         header("Location: ../../views/auth/register.php");
@@ -13,11 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // 2. Ambil dan sanitasi input
-    $nik = filter_input(INPUT_POST, 'nik', FILTER_SANITIZE_STRING);
-    $nama_lengkap = filter_input(INPUT_POST, 'nama_lengkap', FILTER_SANITIZE_STRING);
+    $nik = $_POST['nik'] ?? '';
+    $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $no_hp = filter_input(INPUT_POST, 'no_hp', FILTER_SANITIZE_STRING);
-    $alamat = filter_input(INPUT_POST, 'alamat', FILTER_SANITIZE_STRING);
+    $no_hp = trim($_POST['no_hp'] ?? '');
+    $alamat = trim($_POST['alamat'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
@@ -74,21 +74,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // 7. Simpan data ke database
-        $sql = "INSERT INTO users (nik, nama_lengkap, email, no_hp, alamat, password, verification_token, role, is_active) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'warga', 0)";
+        // Kolom di database bernama 'alamat_ktp', bukan 'alamat'. Serta kolom 'username' wajib diisi (kita gunakan NIK sebagai username default).
+        $sql = "INSERT INTO users (nik, username, nama_lengkap, email, no_hp, alamat_ktp, password, verification_token, role, is_active) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'warga', 0)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$nik, $nama_lengkap, $email, $no_hp, $alamat, $hashed_password, $verification_token]);
+        $stmt->execute([$nik, $nik, $nama_lengkap, $email, $no_hp, $alamat, $hashed_password, $verification_token]);
 
-        // 8. Simulasi Pengiriman Email
+        // 8. Kirim Email Verifikasi
         $activation_link = "http://localhost/aplikasi_arsip_teluknaga/actions/auth/activate.php?token=" . $verification_token;
         
-        // Dalam implementasi nyata, gunakan PHPMailer untuk mengirim email ini.
-        // Di sini kita mencatat log sebagai simulasi.
-        error_log("SIMULASI EMAIL TERKIRIM KE: " . $email);
-        error_log("Subjek: Aktivasi Akun Arsip Teluknaga");
-        error_log("Pesan: Klik tautan berikut untuk mengaktifkan akun Anda: " . $activation_link);
+        require '../../vendor/autoload.php';
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
-        set_flash_message('success', 'Registrasi berhasil! Silakan periksa email Anda (simulasi) untuk tautan aktivasi.');
+        try {
+            // Konfigurasi Server SMTP
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            
+            // ==========================================
+            // KREDENSIAL DIAMBIL DARI CONFIG RAHASIA
+            // ==========================================
+            $email_config = require '../../config/email_config.php';
+            $mail->Username   = $email_config['username'];
+            $mail->Password   = $email_config['password'];
+            // ==========================================
+            
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // Pengirim dan Penerima
+            $mail->setFrom($email_config['username'], 'Aplikasi Arsip Teluknaga');
+            $mail->addAddress($email, $nama_lengkap);
+
+            // Konten Email
+            $mail->isHTML(true);
+            $mail->Subject = 'Aktivasi Akun Aplikasi Arsip Teluknaga';
+            $mail->Body    = "Halo $nama_lengkap,<br><br>
+                              Terima kasih telah mendaftar di Aplikasi Arsip Teluknaga.<br>
+                              Silakan klik tombol di bawah ini untuk mengaktifkan akun Anda:<br><br>
+                              <a href='$activation_link' style='padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;'>Aktifkan Akun</a><br><br>
+                              Atau copy link berikut ke browser Anda:<br>
+                              $activation_link<br><br>
+                              Jika Anda tidak merasa mendaftar di aplikasi ini, abaikan saja email ini.";
+
+            $mail->send();
+            
+            set_flash_message('success', 'Registrasi berhasil! Silakan periksa kotak masuk (inbox) atau folder spam di email Anda untuk link aktivasi.');
+        } catch (Exception $e) {
+            error_log("Email tidak dapat dikirim. Mailer Error: {$mail->ErrorInfo}");
+            set_flash_message('warning', 'Registrasi berhasil, tetapi sistem gagal mengirim email aktivasi. Silakan hubungi admin.');
+        }
+
         header("Location: ../../views/auth/login.php");
         exit;
 

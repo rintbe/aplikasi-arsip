@@ -2,3 +2,5 @@
 /uploads/
 .DS_Store
 Thumbs.db
+
+config/email_config.php

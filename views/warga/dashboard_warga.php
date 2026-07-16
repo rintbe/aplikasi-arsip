@@ -308,15 +308,15 @@ try {
                                         <?= htmlspecialchars($row->status) ?>
                                     </span>
                                     <?php if ($row->status == 'Selesai' && !empty($row->file_hasil)): ?>
-                                        <div style="margin-top: 8px;">
-                                            <a href="../../uploads/surat_hasil/<?= htmlspecialchars($row->file_hasil) ?>" target="_blank" class="btn" style="padding: 4px 8px; font-size: 11px; background-color: var(--success-color);">
-                                                Unduh Surat PDF
+                                        <div style="margin-top: 10px;">
+                                            <a href="../../uploads/surat_hasil/<?= htmlspecialchars($row->file_hasil) ?>" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px; background-color: var(--success-color); display: inline-block; white-space: nowrap; text-align: center; border-radius: 4px;">
+                                                <i class="fa-solid fa-download"></i> Unduh PDF
                                             </a>
                                         </div>
                                     <?php elseif (strtolower($row->status) == 'ditolak'): ?>
-                                        <div style="margin-top: 8px;">
-                                            <a href="form_pengajuan.php?edit_id=<?= $row->id ?>" class="btn" style="padding: 4px 8px; font-size: 11px; background-color: var(--warning-color); color: white;">
-                                                Perbaiki Data
+                                        <div style="margin-top: 10px;">
+                                            <a href="form_pengajuan.php?edit_id=<?= $row->id ?>" class="btn" style="padding: 6px 12px; font-size: 12px; background-color: var(--warning-color); color: white; display: inline-block; white-space: nowrap; text-align: center; border-radius: 4px;">
+                                                <i class="fa-solid fa-pen-to-square"></i> Perbaiki Data
                                             </a>
                                         </div>
                                     <?php endif; ?>
