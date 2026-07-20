@@ -66,7 +66,7 @@ check_login();
                 <span class="text-sm font-medium text-slate-600 border px-3 py-1 bg-white rounded-full shadow-sm">
                     <i class="fa-solid fa-user-circle text-purple-500 mr-2"></i><?= htmlspecialchars($_SESSION['nama_lengkap']) ?>
                 </span>
-                <a href="logout.php" onclick="return confirm('Yakin ingin keluar?');" class="text-pink-600 hover:text-white hover:bg-pink-500 border border-pink-200 px-3 py-1 rounded-full text-sm font-medium transition-colors">
+                <a href="logout.php" onclick="confirmAction(event, this.href, 'Yakin ingin keluar?');" class="text-pink-600 hover:text-white hover:bg-pink-500 border border-pink-200 px-3 py-1 rounded-full text-sm font-medium transition-colors">
                     <i class="fa-solid fa-sign-out-alt"></i> Logout
                 </a>
             </div>

@@ -72,5 +72,28 @@
         };
         inactivityTime();
     </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmAction(event, url, text) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ec4899',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                position: 'center'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
 </body>
 </html>

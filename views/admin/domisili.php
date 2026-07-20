@@ -227,7 +227,7 @@ if ($action == 'add' && $pengajuan_id > 0) {
                         </td>
                         <td class="p-4 flex gap-2 justify-center">
                             <a href="domisili.php?action=edit&id=<?= $row['id'] ?>" class="text-sky-500 hover:text-sky-700 bg-sky-50 hover:bg-sky-100 px-2 py-1 rounded transition">Edit</a>
-                            <a href="domisili.php?action=delete&id=<?= $row['id'] ?>" onclick="return confirm('Hapus data ini?');" class="text-pink-500 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded transition">Hapus</a>
+                            <a href="domisili.php?action=delete&id=<?= $row['id'] ?>" onclick="confirmAction(event, this.href, 'Hapus data ini?');" class="text-pink-500 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-2 py-1 rounded transition">Hapus</a>
                         </td>
                     </tr>
                     <?php } ?>
