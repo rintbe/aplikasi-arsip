@@ -2,9 +2,18 @@
 // views/auth/reset_password.php
 require_once '../../config/db_connect.php';
 
-// Validasi Token Reset
-if (!isset($_GET['token']) || !isset($_SESSION['reset_token']) || $_GET['token'] !== $_SESSION['reset_token'] || !isset($_SESSION['reset_user_id'])) {
-    set_flash_message('danger', 'Sesi reset password tidak valid atau telah kedaluwarsa. Silakan ulangi proses lupa password.');
+// Validasi Token Reset dari URL
+if (!isset($_GET['token']) || empty($_GET['token'])) {
+    set_flash_message('danger', 'Link reset password tidak valid.');
+    header("Location: login.php");
+    exit;
+}
+
+$token = $_GET['token'];
+$stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ?");
+$stmt->execute([$token]);
+if ($stmt->rowCount() === 0) {
+    set_flash_message('danger', 'Link reset password tidak valid atau telah kedaluwarsa.');
     header("Location: login.php");
     exit;
 }

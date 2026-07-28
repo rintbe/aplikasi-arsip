@@ -12,11 +12,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 2. Validasi Token Reset dari form
+    // 2. Validasi Token Reset dari form (database based)
     $token_post = $_POST['token'] ?? '';
+    if (empty($token_post)) {
+        set_flash_message('danger', 'Token reset tidak ditemukan.');
+        header("Location: ../../views/auth/login.php");
+        exit;
+    }
     
-    if (!isset($_SESSION['reset_token']) || $token_post !== $_SESSION['reset_token'] || !isset($_SESSION['reset_user_id'])) {
-        set_flash_message('danger', 'Sesi reset password tidak valid atau telah kedaluwarsa.');
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ?");
+    $stmt->execute([$token_post]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        set_flash_message('danger', 'Token reset password tidak valid atau telah kedaluwarsa.');
         header("Location: ../../views/auth/login.php");
         exit;
     }
@@ -38,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($errors)) {
         $error_msg = implode('<br>', $errors);
         set_flash_message('danger', $error_msg);
-        header("Location: ../../views/auth/reset_password.php?token=" . $_SESSION['reset_token']);
+        header("Location: ../../views/auth/reset_password.php?token=" . $token_post);
         exit;
     }
 
@@ -46,12 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
         
-        $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-        $stmt->execute([$hashed_password, $_SESSION['reset_user_id']]);
-
-        // Bersihkan session reset agar token tidak bisa dipakai lagi
-        unset($_SESSION['reset_token']);
-        unset($_SESSION['reset_user_id']);
+        $updateStmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL WHERE id = ?");
+        $updateStmt->execute([$hashed_password, $user->id]);
 
         set_flash_message('success', 'Password berhasil direset. Silakan login dengan password baru Anda.');
         header("Location: ../../views/auth/login.php");
@@ -60,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (PDOException $e) {
         error_log("Reset Password Error: " . $e->getMessage());
         set_flash_message('danger', 'Terjadi kesalahan sistem saat memperbarui password.');
-        header("Location: ../../views/auth/reset_password.php?token=" . $_SESSION['reset_token']);
+        header("Location: ../../views/auth/reset_password.php?token=" . $token_post);
         exit;
     }
 

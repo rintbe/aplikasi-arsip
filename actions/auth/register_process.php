@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $no_hp = trim($_POST['no_hp'] ?? '');
+    $tanggal_lahir = trim($_POST['tanggal_lahir'] ?? '');
+    $nama_ibu_kandung = trim($_POST['nama_ibu_kandung'] ?? '');
     $alamat = trim($_POST['alamat'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -75,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // 7. Simpan data ke database
         // Kolom di database bernama 'alamat_ktp', bukan 'alamat'. Serta kolom 'username' wajib diisi (kita gunakan NIK sebagai username default).
-        $sql = "INSERT INTO users (nik, username, nama_lengkap, email, no_hp, alamat_ktp, password, verification_token, role, is_active) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'warga', 0)";
+        $sql = "INSERT INTO users (nik, username, nama_lengkap, email, no_hp, tanggal_lahir, nama_ibu_kandung, alamat_ktp, password, verification_token, role, is_active) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'warga', 0)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$nik, $nik, $nama_lengkap, $email, $no_hp, $alamat, $hashed_password, $verification_token]);
+        $stmt->execute([$nik, $nik, $nama_lengkap, $email, $no_hp, $tanggal_lahir, $nama_ibu_kandung, $alamat, $hashed_password, $verification_token]);
 
         // 8. Kirim Email Verifikasi
         $activation_link = "http://localhost/aplikasi_arsip_teluknaga/actions/auth/activate.php?token=" . $verification_token;

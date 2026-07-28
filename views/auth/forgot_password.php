@@ -169,6 +169,21 @@ if (isset($_SESSION['user_id'])) {
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" class="form-control" required placeholder="Masukkan email terdaftar">
             </div>
+
+            <div class="form-group">
+                <label for="no_hp">No. Handphone</label>
+                <input type="text" id="no_hp" name="no_hp" class="form-control" required placeholder="Masukkan nomor handphone terdaftar">
+            </div>
+
+            <div class="form-group">
+                <label for="tanggal_lahir">Tanggal Lahir</label>
+                <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nama_ibu_kandung">Nama Ibu Kandung</label>
+                <input type="text" id="nama_ibu_kandung" name="nama_ibu_kandung" class="form-control" required placeholder="Nama ibu kandung sesuai KTP">
+            </div>
             
             <button type="submit" class="btn-submit">Verifikasi</button>
         </form>

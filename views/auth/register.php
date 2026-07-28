@@ -183,6 +183,17 @@ if (isset($_SESSION['user_id'])) {
                     <input type="text" id="no_hp" name="no_hp" class="form-control" required placeholder="08xxxxxxxxxx">
                 </div>
             </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tanggal_lahir">Tanggal Lahir</label>
+                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="nama_ibu_kandung">Nama Ibu Kandung</label>
+                    <input type="text" id="nama_ibu_kandung" name="nama_ibu_kandung" class="form-control" required placeholder="Sesuai KTP">
+                </div>
+            </div>
             
             <div class="form-group">
                 <label for="alamat">Alamat Lengkap</label>
