@@ -238,7 +238,7 @@ $existing_meta = $row_edit && $row_edit->data_meta ? $row_edit->data_meta : '{}'
     const instruksiData = {
         'Surat Keterangan Domisili': '<strong>📌 Persyaratan Dokumen Domisili:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP Asli<br>2. Kartu Keluarga (KK)',
         'Surat Keterangan Usaha': '<strong>📌 Persyaratan Dokumen Usaha:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP Pemilik Usaha<br>2. Foto Tempat Usaha atau Surat Pengantar RT/RW',
-        'Surat Keterangan Tidak Mampu (SKTM)': '<strong>📌 Persyaratan Dokumen SKTM:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP dan KK<br>2. Surat Pengantar Tidak Mampu dari RT/RW',
+        'Surat Keterangan Tidak Mampu (SKTM)': '<strong>📌 Persyaratan Dokumen SKTM:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP dan KK<br>2. Surat Pengantar Tidak Mampu dari RT/RW<br>3. Foto rumah tampak depan, ruang tamu/keluarga, kamar tidur, dapur dan kamar mandi',
         'Surat Keterangan Kematian': '<strong>📌 Persyaratan Dokumen Kematian:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP/KK Almarhum<br>2. KTP Pelapor<br>3. Surat Keterangan Kematian (RS/Dokter/RT)',
         'Surat Keterangan Pindah': '<strong>📌 Persyaratan Dokumen Pindah:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP dan KK Asli<br>2. Surat Pengantar Pindah dari RT/RW',
         'Surat Pengantar Pernikahan': '<strong>📌 Persyaratan Dokumen Pernikahan:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP Pria & KTP Wanita<br>2. KK Pria & KK Wanita<br>3. Surat Pengantar RT/RW'
