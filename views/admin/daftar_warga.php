@@ -10,9 +10,20 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $page_title = 'Data Warga';
 
+$filter_search = $_GET['search'] ?? '';
+
 // Ambil data warga
-$stmt = $pdo->prepare("SELECT id, nik, nama_lengkap, email, no_hp FROM users WHERE role = 'warga' ORDER BY nama_lengkap ASC");
-$stmt->execute();
+$where_sql = "WHERE role = 'warga'";
+$params = [];
+
+if (!empty($filter_search)) {
+    $where_sql .= " AND (nik LIKE ? OR nama_lengkap LIKE ? OR email LIKE ? OR no_hp LIKE ?)";
+    $search_term = "%$filter_search%";
+    $params = [$search_term, $search_term, $search_term, $search_term];
+}
+
+$stmt = $pdo->prepare("SELECT id, nik, nama_lengkap, email, no_hp FROM users $where_sql ORDER BY nama_lengkap ASC");
+$stmt->execute($params);
 $warga_list = $stmt->fetchAll();
 
 include __DIR__ . '/layout/header.php';
@@ -21,11 +32,32 @@ include __DIR__ . '/layout/header.php';
 <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50/50">
     <div class="max-w-6xl mx-auto space-y-6">
         
-        <div class="flex justify-between items-end">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-2">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Daftar Warga</h1>
                 <p class="text-slate-500 text-sm mt-1">Data seluruh warga yang terdaftar pada sistem.</p>
             </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <!-- Pencarian -->
+                <div class="lg:col-span-3">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pencarian</label>
+                    <input type="text" name="search" value="<?= htmlspecialchars($filter_search) ?>" placeholder="NIK, Nama, Email, No HP..." class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-2 h-[38px]">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-search"></i> Cari
+                    </button>
+                    <a href="daftar_warga.php" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center px-4" title="Reset Filter">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </a>
+                </div>
+            </form>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">

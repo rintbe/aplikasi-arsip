@@ -7,6 +7,10 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $msg = '';
 
+$filter_search = $_GET['search'] ?? '';
+$filter_date_start = $_GET['date_start'] ?? '';
+$filter_date_end = $_GET['date_end'] ?? '';
+
 // Handle Delete
 if($action == 'delete' && $id > 0) {
     $qFile = mysqli_query($conn, "SELECT file_pdf FROM surat_kematian WHERE id=$id");
@@ -187,12 +191,6 @@ if ($action == 'add' && $pengajuan_id > 0) {
         <div class="p-6 border-b border-purple-50 flex flex-col md:flex-row justify-between items-center bg-gray-50/50 gap-4">
             <h2 class="text-xl font-bold text-slate-800">Daftar Surat Kematian</h2>
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="relative w-full md:w-64">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i class="fa-solid fa-search text-slate-400"></i>
-                    </div>
-                    <input type="text" id="tableSearch" class="bg-white border border-purple-200 text-slate-700 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full pl-10 p-2.5" placeholder="Cari data..." autocomplete="off">
-                </div>
                 <a href="export_excel.php?type=kematian" class="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm">
                     <i class="fa-solid fa-file-excel mr-2"></i> Ekspor
                 </a>
@@ -200,6 +198,39 @@ if ($action == 'add' && $pengajuan_id > 0) {
                     <i class="fa-solid fa-plus mr-2"></i> Tambah Baru
                 </a>
             </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="p-6 border-b border-purple-50 bg-white shadow-sm">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <!-- Pencarian -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pencarian</label>
+                    <input type="text" name="search" value="<?= htmlspecialchars($filter_search) ?>" placeholder="Nomor Surat, Nama Almarhum, NIK..." class="w-full text-sm px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow">
+                </div>
+                
+                <!-- Filter Tanggal Mulai -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
+                    <input type="date" name="date_start" value="<?= htmlspecialchars($filter_date_start) ?>" class="w-full text-sm px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow text-slate-700">
+                </div>
+
+                <!-- Filter Tanggal Akhir -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Akhir</label>
+                    <input type="date" name="date_end" value="<?= htmlspecialchars($filter_date_end) ?>" class="w-full text-sm px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow text-slate-700">
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-2 h-[38px]">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-search"></i> Cari
+                    </button>
+                    <a href="kematian.php" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center px-4" title="Reset Filter">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </a>
+                </div>
+            </form>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -218,7 +249,22 @@ if ($action == 'add' && $pengajuan_id > 0) {
                 </thead>
                 <tbody class="text-sm text-slate-600 divide-y divide-purple-50">
                     <?php
-                    $res = mysqli_query($conn, "SELECT * FROM surat_kematian ORDER BY id DESC");
+                    $where_clauses = [];
+                    if (!empty($filter_search)) {
+                        $search_clean = mysqli_real_escape_string($conn, $filter_search);
+                        $where_clauses[] = "(nomor_surat LIKE '%$search_clean%' OR nama_almarhum LIKE '%$search_clean%' OR nik LIKE '%$search_clean%')";
+                    }
+                    if (!empty($filter_date_start)) {
+                        $date_start_clean = mysqli_real_escape_string($conn, $filter_date_start);
+                        $where_clauses[] = "tanggal_pembuatan_surat >= '$date_start_clean'";
+                    }
+                    if (!empty($filter_date_end)) {
+                        $date_end_clean = mysqli_real_escape_string($conn, $filter_date_end);
+                        $where_clauses[] = "tanggal_pembuatan_surat <= '$date_end_clean'";
+                    }
+                    $where_sql = count($where_clauses) > 0 ? "WHERE " . implode(" AND ", $where_clauses) : "";
+                    
+                    $res = mysqli_query($conn, "SELECT * FROM surat_kematian $where_sql ORDER BY id DESC");
                     $no = 1;
                     while($row = mysqli_fetch_assoc($res)) {
                     ?>
@@ -256,47 +302,7 @@ if ($action == 'add' && $pengajuan_id > 0) {
 </div>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('tableSearch');
-    if(searchInput) {
-        const datalist = document.createElement('datalist');
-        datalist.id = 'searchSuggest';
-        document.body.appendChild(datalist);
-        searchInput.setAttribute('list', 'searchSuggest');
 
-        const uniqueTerms = new Set();
-        const tableRows = document.querySelectorAll('tbody tr');
-        
-        tableRows.forEach(row => {
-            if (row.cells.length <= 1) return;
-            if(row.cells[1]) uniqueTerms.add(row.cells[1].textContent.trim());
-            if(row.cells[2]) uniqueTerms.add(row.cells[2].textContent.trim());
-            if(row.cells[3]) uniqueTerms.add(row.cells[3].textContent.trim());
-        });
-
-        uniqueTerms.forEach(term => {
-            if(term && term !== '-' && term.length > 2) {
-                const option = document.createElement('option');
-                option.value = term;
-                datalist.appendChild(option);
-            }
-        });
-
-        function doSearch() {
-            const searchTerm = searchInput.value.toLowerCase();
-            tableRows.forEach(row => {
-                if (row.cells.length === 1 && row.cells[0].colSpan > 1) return;
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
-
-        searchInput.addEventListener('keyup', doSearch);
-        searchInput.addEventListener('input', doSearch);
-    }
-});
-</script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>
 

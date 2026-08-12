@@ -16,10 +16,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     <title><?= isset($page_title) ? $page_title : 'Dashboard' ?> - Arsip Surat Desa Teluknaga</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             background: #fdf2f8; /* pink-50 */
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         .bg-glass {
             background: rgba(255, 255, 255, 0.85);
@@ -87,4 +88,4 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         </header>
         
         <!-- Main Scrollable Content -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f8fafc] p-6">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white p-6">
