@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Add the user's extra note if any
     if (!empty(trim($keperluan_tambahan))) {
-        $keperluan_summary .= "\nCatatan Tambahan:\n" . trim($keperluan_tambahan);
+        $keperluan_summary .= "\nKeperluan:\n" . trim($keperluan_tambahan);
     }
     
     // Fallback if empty

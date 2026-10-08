@@ -225,11 +225,7 @@ $page_title = 'Profil Saya';
 
         <div class="alert-info">
             <strong><i class="fa-solid fa-circle-info"></i> Panduan Foto Profil:</strong><br>
-            Unggah pas foto dengan wajah terlihat jelas.
-            <ul style="margin-top: 5px; margin-bottom: 0; padding-left: 20px;">
-                <li>Latar belakang <strong>MERAH</strong> untuk Tahun Lahir <strong>Ganjil</strong>.</li>
-                <li>Latar belakang <strong>BIRU</strong> untuk Tahun Lahir <strong>Genap</strong>.</li>
-            </ul>
+            Foto profil wajib memperlihatkan wajah dengan jelas dan berpakaian sopan.
         </div>
 
         <form action="../../actions/warga/update_profil.php" method="POST" enctype="multipart/form-data">
@@ -313,29 +309,6 @@ $page_title = 'Profil Saya';
     alamatKtp.addEventListener('input', function() {
         if (cbSamaKtp.checked) {
             alamatDomisili.value = this.value;
-        }
-    });
-
-    // Validasi Tanggal Lahir vs Foto (Peringatan Sederhana)
-    const tanggalLahir = document.getElementById('tanggal_lahir');
-    const fotoProfil = document.getElementById('foto_profil');
-
-    fotoProfil.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const tgl = tanggalLahir.value;
-            if (!tgl) {
-                alert("Mohon isi Tanggal Lahir terlebih dahulu untuk memastikan syarat warna latar foto.");
-                return;
-            }
-
-            const year = new Date(tgl).getFullYear();
-            const isGanjil = year % 2 !== 0;
-            const requiredColor = isGanjil ? "MERAH" : "BIRU";
-
-            alert(`PERINGATAN TAHUN LAHIR:
-Tahun lahir Anda adalah ${year} (${isGanjil ? 'Ganjil' : 'Genap'}).
-Pastikan pas foto Anda memiliki Latar Belakang berwarna ${requiredColor}. 
-Jika salah, pengajuan dokumen Anda dapat ditolak oleh admin desa.`);
         }
     });
 

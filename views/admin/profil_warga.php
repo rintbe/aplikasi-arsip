@@ -27,19 +27,10 @@ if (!$warga) {
 
 $page_title = 'Detail Profil Warga';
 
-// Penentuan syarat latar belakang foto
-$syarat_warna = "-";
-$badge_color = "bg-slate-100 text-slate-800";
-if (!empty($warga->tanggal_lahir)) {
-    $tahun = (int) date('Y', strtotime($warga->tanggal_lahir));
-    if ($tahun % 2 !== 0) {
-        $syarat_warna = "MERAH (Tahun Ganjil: $tahun)";
-        $badge_color = "bg-red-100 text-red-800 border-red-200";
-    } else {
-        $syarat_warna = "BIRU (Tahun Genap: $tahun)";
-        $badge_color = "bg-blue-100 text-blue-800 border-blue-200";
-    }
-}
+// Penentuan syarat latar belakang foto (Dihapus sesuai permintaan)
+$syarat_warna = "Bebas";
+$badge_color = "bg-green-100 text-green-800 border-green-200";
+
 
 include __DIR__ . '/layout/header.php';
 ?>
@@ -71,10 +62,9 @@ include __DIR__ . '/layout/header.php';
                                 <span class="text-sm text-slate-400">Belum ada foto</span>
                             <?php endif; ?>
                         </div>
-                        
                         <div class="w-full text-center p-3 rounded-lg border <?= $badge_color ?>">
-                            <div class="text-xs font-semibold uppercase tracking-wider mb-1 opacity-75">Syarat Warna Latar Foto</div>
-                            <div class="font-bold text-sm"><?= $syarat_warna ?></div>
+                            <div class="text-xs font-semibold uppercase tracking-wider mb-1 opacity-75">Syarat Foto Profil</div>
+                            <div class="font-bold text-sm">Wajah Jelas & Pakaian Sopan</div>
                         </div>
                     </div>
 

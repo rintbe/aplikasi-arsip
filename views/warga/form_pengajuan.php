@@ -12,6 +12,21 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'warga') {
 $edit_id = isset($_GET['edit_id']) ? (int)$_GET['edit_id'] : 0;
 $row_edit = null;
 
+// Ambil data profil warga untuk auto-fill
+$stmt_user = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt_user->execute([$_SESSION['user_id']]);
+$user_profile = $stmt_user->fetch(PDO::FETCH_OBJ);
+
+$tempat_tgl_lahir = '';
+if ($user_profile) {
+    $tempat = $user_profile->tempat_lahir ?? '';
+    $tgl = $user_profile->tanggal_lahir ? date('d-m-Y', strtotime($user_profile->tanggal_lahir)) : ''; // format standard
+    if ($tempat && $tgl) {
+        $tempat_tgl_lahir = "$tempat, $tgl";
+    }
+}
+$alamat_warga = $user_profile->alamat_domisili ?? ($user_profile->alamat_ktp ?? '');
+
 if ($edit_id > 0) {
     try {
         $stmt_edit = $pdo->prepare("SELECT * FROM pengajuan_surat WHERE id = ? AND user_id = ?");
@@ -202,8 +217,8 @@ if ($edit_id > 0) {
             <div id="dynamic-fields-container"></div>
 
             <div class="form-group">
-                <label for="keperluan">Catatan Tambahan (Opsional)</label>
-                <textarea name="keperluan" id="keperluan" class="form-control" placeholder="Tuliskan jika ada pesan tambahan..."><?= $row_edit ? htmlspecialchars($row_edit->keperluan) : '' ?></textarea>
+                <label for="keperluan">Keperluan Pengajuan Surat (Wajib)</label>
+                <textarea name="keperluan" id="keperluan" class="form-control" required placeholder="Jelaskan secara rinci keperluan Anda mengajukan surat ini..."><?= $row_edit ? htmlspecialchars($row_edit->keperluan) : '' ?></textarea>
             </div>
 
             <div class="form-group">
@@ -234,6 +249,8 @@ $existing_meta = $row_edit && $row_edit->data_meta ? $row_edit->data_meta : '{}'
     const instruksiBox = document.getElementById('instruksi-lampiran');
     const dynamicContainer = document.getElementById('dynamic-fields-container');
     const existingMeta = <?= $existing_meta ?>;
+    const defaultTempatTglLahir = <?= json_encode($tempat_tgl_lahir) ?>;
+    const defaultAlamat = <?= json_encode($alamat_warga) ?>;
 
     const instruksiData = {
         'Surat Keterangan Domisili': '<strong>📌 Persyaratan Dokumen Domisili:</strong><br>Mohon jadikan satu file (PDF/JPG) scan atau foto dari:<br>1. KTP Asli<br>2. Kartu Keluarga (KK)',
@@ -248,11 +265,11 @@ $existing_meta = $row_edit && $row_edit->data_meta ? $row_edit->data_meta : '{}'
         'Surat Keterangan Domisili': `
             <div class="form-group">
                 <label>Tempat, Tanggal Lahir</label>
-                <input type="text" name="meta[tempat_tanggal_lahir]" class="form-control" required placeholder="Contoh: Tangerang, 17 Agustus 1990" value="${existingMeta.tempat_tanggal_lahir || ''}">
+                <input type="text" name="meta[tempat_tanggal_lahir]" class="form-control" required placeholder="Contoh: Tangerang, 17-08-1990" value="${existingMeta.tempat_tanggal_lahir || defaultTempatTglLahir}">
             </div>
             <div class="form-group">
                 <label>Alamat Lengkap Domisili</label>
-                <textarea name="meta[alamat_domisili]" class="form-control" required rows="2" placeholder="Detail jalan, RT/RW, dsb.">${existingMeta.alamat_domisili || ''}</textarea>
+                <textarea name="meta[alamat_domisili]" class="form-control" required rows="2" placeholder="Detail jalan, RT/RW, dsb.">${existingMeta.alamat_domisili || defaultAlamat}</textarea>
             </div>
         `,
         'Surat Keterangan Usaha': `
@@ -294,7 +311,7 @@ $existing_meta = $row_edit && $row_edit->data_meta ? $row_edit->data_meta : '{}'
         'Surat Keterangan Pindah': `
             <div class="form-group">
                 <label>Alamat Asal</label>
-                <textarea name="meta[alamat_asal]" class="form-control" required rows="2" placeholder="Alamat lengkap asal...">${existingMeta.alamat_asal || ''}</textarea>
+                <textarea name="meta[alamat_asal]" class="form-control" required rows="2" placeholder="Alamat lengkap asal...">${existingMeta.alamat_asal || defaultAlamat}</textarea>
             </div>
             <div class="form-group">
                 <label>Alamat Tujuan Pindah</label>

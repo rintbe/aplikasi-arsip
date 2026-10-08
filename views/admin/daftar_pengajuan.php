@@ -90,9 +90,10 @@ try {
                         <option value="">Semua Jenis</option>
                         <option value="Surat Keterangan Domisili" <?= $jenis_surat == 'Surat Keterangan Domisili' ? 'selected' : '' ?>>Domisili</option>
                         <option value="Surat Keterangan Usaha" <?= $jenis_surat == 'Surat Keterangan Usaha' ? 'selected' : '' ?>>Usaha</option>
+                        <option value="Surat Keterangan Tidak Mampu (SKTM)" <?= $jenis_surat == 'Surat Keterangan Tidak Mampu (SKTM)' ? 'selected' : '' ?>>SKTM</option>
                         <option value="Surat Keterangan Kematian" <?= $jenis_surat == 'Surat Keterangan Kematian' ? 'selected' : '' ?>>Kematian</option>
-                        <option value="Surat Pindah Penduduk" <?= $jenis_surat == 'Surat Pindah Penduduk' ? 'selected' : '' ?>>Pindah</option>
-                        <option value="Surat Pengantar Nikah" <?= $jenis_surat == 'Surat Pengantar Nikah' ? 'selected' : '' ?>>Pernikahan</option>
+                        <option value="Surat Keterangan Pindah" <?= $jenis_surat == 'Surat Keterangan Pindah' ? 'selected' : '' ?>>Pindah</option>
+                        <option value="Surat Pengantar Pernikahan" <?= $jenis_surat == 'Surat Pengantar Pernikahan' ? 'selected' : '' ?>>Pernikahan</option>
                     </select>
                 </div>
 
@@ -182,7 +183,7 @@ try {
                             <td class="p-4">
                                 <div class="flex flex-col items-center gap-2">
                                     <?php if(!empty($row->lampiran_file)): ?>
-                                        <a href="../../<?= htmlspecialchars($row->lampiran_path . $row->lampiran_file) ?>" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors shadow-sm inline-flex items-center justify-center gap-1 w-full" title="Lihat Berkas Persyaratan">
+                                        <a href="lihat_berkas.php?id=<?= $row->id ?>" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors shadow-sm inline-flex items-center justify-center gap-1 w-full" title="Lihat Berkas Persyaratan">
                                             <i class="fa-solid fa-paperclip"></i> Cek Berkas
                                         </a>
                                     <?php endif; ?>
